@@ -1,0 +1,19 @@
+{
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "user": "user",
+    "password": "password",
+    "dbname": "dbname",
+    "maxOpenConns": 24,
+    "maxIdleConns": 12,
+    "connMaxLifetime": 300
+  },
+  "processing": {
+    "batchSize": 2000,
+    "maxConcurrentFiles": 12
+  },
+  "metrics": {
+    "port": 8080
+  }
+}
