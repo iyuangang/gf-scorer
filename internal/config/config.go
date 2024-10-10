@@ -5,9 +5,10 @@ import (
 )
 
 type Config struct {
-	Database   DatabaseConfig
-	Processing ProcessingConfig
-	Metrics    MetricsConfig
+	Database      DatabaseConfig
+	Processing    ProcessingConfig
+	Metrics       MetricsConfig
+	KeyGeneration KeyGenerationConfig
 }
 
 type DatabaseConfig struct {
@@ -28,6 +29,16 @@ type ProcessingConfig struct {
 
 type MetricsConfig struct {
 	Port int
+}
+
+type KeyGenerationConfig struct {
+	TotalKeys       int
+	NumWorkers      int
+	MinScore        int
+	MaxLettersCount int
+	Name            string
+	Comment         string
+	Email           string
 }
 
 func Load(configPath string) (*Config, error) {

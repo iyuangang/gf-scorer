@@ -37,7 +37,7 @@ func main() {
 	s := scorer.New(db, cfg)
 
 	if *generateKeys {
-		err = s.GenerateKeys(100000000, 12) // Generate 1000 keys using 10 workers
+		err = s.GenerateKeys()
 		if err != nil {
 			log.Fatalf("Failed to generate keys: %v", err)
 		}
