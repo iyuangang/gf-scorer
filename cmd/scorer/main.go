@@ -20,11 +20,8 @@ import (
 func main() {
 	configPath := flag.String("config", "config.json", "Path to config file")
 	inputPath := flag.String("input", "", "Path to input file or directory")
+	generateKeys := flag.Bool("generate-keys", false, "Generate GPG keys")
 	flag.Parse()
-
-	if *inputPath == "" {
-		log.Fatal("Input path is required")
-	}
 
 	cfg, err := config.Load(*configPath)
 	if err != nil {
@@ -37,7 +34,20 @@ func main() {
 	}
 	defer database.CloseDB(db)
 
-	s := scorer.New(db)
+	s := scorer.New(db, cfg)
+
+	if *generateKeys {
+		err = s.GenerateKeys(100000000, 12) // Generate 1000 keys using 10 workers
+		if err != nil {
+			log.Fatalf("Failed to generate keys: %v", err)
+		}
+		log.Println("Finished generating GPG keys")
+		return
+	}
+
+	if *inputPath == "" {
+		log.Fatal("Input path is required when not generating keys")
+	}
 
 	inputAbs, err := filepath.Abs(*inputPath)
 	if err != nil {
