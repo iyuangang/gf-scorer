@@ -16,6 +16,10 @@ type KeyInfo struct {
 	Fingerprint   string
 	PublicKey     string
 	PrivateKey    string
+	RLScore       int
+	ILScore       int
+	DLScore       int
+	MLScore       int
 	Score         int
 	LettersCount  int
 }
@@ -48,10 +52,11 @@ func (s *Scorer) GenerateKeys(numKeys int, numWorkers int) error {
 
 func (s *Scorer) generateKeyPair() (KeyInfo, error) {
 
-	entity, err := openpgp.NewEntity("Tim Yuan", "Comment", "yuangang@me.com", &packet.Config{
+	entity, err := openpgp.NewEntity("Tim Yuan", "some where only we know", "yuangang@me.com", &packet.Config{
 		DefaultHash:   crypto.SHA256,
 		Time:          time.Now,
 		Algorithm:     packet.PubKeyAlgoEdDSA,
+		KeyLifetimeSecs: 0,
 	})
 	if err != nil {
 		return KeyInfo{}, fmt.Errorf("failed to create entity: %w", err)
@@ -59,7 +64,7 @@ func (s *Scorer) generateKeyPair() (KeyInfo, error) {
 
 	fingerprint := fmt.Sprintf("%x", entity.PrimaryKey.Fingerprint)
 	scores := calculateScores(fingerprint[len(fingerprint)-16:])
-	totalScore := float64(scores.RLScore + scores.ILScore + scores.DLScore + scores.MLScore)
+	totalScore := scores.RLScore + scores.ILScore + scores.DLScore + scores.MLScore
 	
 	if totalScore <= 200 && scores.LettersCount >= 5 {
 		return KeyInfo{}, fmt.Errorf("key does not meet criteria")
@@ -86,7 +91,11 @@ func (s *Scorer) generateKeyPair() (KeyInfo, error) {
 		Fingerprint:  fingerprint,
 		PublicKey:    pubKeyBuf.String(),
 		PrivateKey:   privKeyBuf.String(),
-		Score:        int(totalScore),
+		RLScore:      scores.RLScore,
+		ILScore:      scores.ILScore,
+		DLScore:      scores.DLScore,
+		MLScore:      scores.MLScore,
+		Score:        totalScore,
 		LettersCount: scores.LettersCount,
 	}, nil
 }
@@ -116,8 +125,8 @@ func (s *Scorer) insertKeyBatch(batch []KeyInfo) error {
 	defer tx.Rollback()
 
 	stmt, err := tx.Prepare(`
-		INSERT INTO gpg_keys (fingerprint, public_key, private_key, score, letters_count)
-		VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO gpg_ed25519_keys (fingerprint, public_key, private_key,rl_score, il_score, dl_score, ml_score, score, letters_count)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 	`)
 	if err != nil {
 		return err
@@ -129,6 +138,10 @@ func (s *Scorer) insertKeyBatch(batch []KeyInfo) error {
 			keyInfo.Fingerprint,
 			keyInfo.PublicKey,
 			keyInfo.PrivateKey,
+			keyInfo.RLScore,
+			keyInfo.ILScore,
+			keyInfo.DLScore,
+			keyInfo.MLScore,
 			keyInfo.Score,
 			keyInfo.LettersCount,
 		)

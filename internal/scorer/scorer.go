@@ -36,15 +36,19 @@ func (s *Scorer) ensureTablesExist() {
     }
 
     _, err = s.db.Exec(`
-        CREATE TABLE IF NOT EXISTS gpg_keys (
+        CREATE TABLE IF NOT EXISTS gpg_ed25519_keys (
             fingerprint VARCHAR(255) PRIMARY KEY,
             public_key TEXT,
             private_key TEXT,
+            rl_score INT,
+            il_score INT,
+            dl_score INT,
+            ml_score INT,
             score INT,
             letters_count INT
         )
     `)
     if err != nil {
-        log.Fatalf("Failed to create gpg_keys table: %v", err)
+        log.Fatalf("Failed to create gpg_ed25519_keys table: %v", err)
     }
 }

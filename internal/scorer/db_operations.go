@@ -11,7 +11,7 @@ type ScoreRecord struct {
 	DLScore      int
 	MLScore      int
 	LettersCount int
-	TotalScore   float64
+	TotalScore   int
 	Filename     string
 	CreateTime   time.Time
 }

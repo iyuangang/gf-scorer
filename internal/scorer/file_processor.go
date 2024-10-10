@@ -82,7 +82,7 @@ func (s *Scorer) processFile(filePath string, batchSize int) error {
 	for _, line := range lines {
 		if line = strings.TrimSpace(line); line != "" {
 			scores := calculateScores(line)
-			totalScore := float64(scores.RLScore + scores.ILScore + scores.DLScore + scores.MLScore)
+			totalScore := scores.RLScore + scores.ILScore + scores.DLScore + scores.MLScore
 
 			record := ScoreRecord{
 				KeyID:        line,
