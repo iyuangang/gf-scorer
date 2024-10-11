@@ -21,6 +21,9 @@ func main() {
 	configPath := flag.String("config", "config.json", "Path to config file")
 	inputPath := flag.String("input", "", "Path to input file or directory")
 	generateKeys := flag.Bool("generate-keys", false, "Generate GPG keys")
+	exportTopKeys := flag.Int("export-top", 0, "Export top N keys by score")
+	exportLowLetterCount := flag.Int("export-low-letter", 0, "Export N keys with lowest letter count")
+	outputFile := flag.String("output", "exported_keys.csv", "Output file for exported keys")
 	flag.Parse()
 
 	cfg, err := config.Load(*configPath)
@@ -45,8 +48,24 @@ func main() {
 		return
 	}
 
+	if *exportTopKeys > 0 {
+		err = s.ExportTopKeys(*exportTopKeys, *outputFile)
+		if err != nil {
+			log.Fatalf("Failed to export top keys: %v", err)
+		}
+		return
+	}
+
+	if *exportLowLetterCount > 0 {
+		err = s.ExportLowLetterCountKeys(*exportLowLetterCount, *outputFile)
+		if err != nil {
+			log.Fatalf("Failed to export low letter count keys: %v", err)
+		}
+		return
+	}
+
 	if *inputPath == "" {
-		log.Fatal("Input path is required when not generating keys")
+		log.Fatal("Input path is required when not generating or exporting keys")
 	}
 
 	inputAbs, err := filepath.Abs(*inputPath)
