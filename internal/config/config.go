@@ -12,10 +12,11 @@ type Config struct {
 }
 
 type DatabaseConfig struct {
-	Host            string
-	Port            int
-	User            string
-	Password        string
+	Type            string // "postgres" or "sqlite"
+	Host            string // Only for postgres
+	Port            int    // Only for postgres
+	User            string // Only for postgres
+	Password        string // Only for postgres
 	DBName          string
 	MaxOpenConns    int
 	MaxIdleConns    int

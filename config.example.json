@@ -15,5 +15,14 @@
   },
   "metrics": {
     "port": 8080
+  },
+  "keyGeneration": {
+    "totalKeys": 10000000,
+    "numWorkers": 12,
+    "minScore": 200,
+    "maxLettersCount": 5,
+    "name": "Your Name",
+    "comment": "Your Comment",
+    "email": "Your Email"
   }
 }
